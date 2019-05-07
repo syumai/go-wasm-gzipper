@@ -5,7 +5,11 @@
 
 ## Example
 
-https://syumai.github.io/go-wasm-gzipper/
+* https://syumai.github.io/go-wasm-gzipper/
+
+### Notice
+
+* Please do not compress large file (100kb~) using this example app 🙏?
 
 ## Development
 

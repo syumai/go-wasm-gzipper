@@ -5,7 +5,7 @@
   </head>
   <body>
     <form id="fileForm" action="#">
-      <input type="file" name="file">
+      <input type="file" name="file" />
       <button>Download as gzip</button>
     </form>
 
@@ -21,31 +21,31 @@
       })();
     </script>
     <script>
-      const fileForm = document.getElementById("fileForm");
+      const fileForm = document.getElementById('fileForm');
       const fileField = fileForm.children.file;
-fileForm.addEventListener("submit", e => {
-  e.preventDefault();
-  if (fileField.files.length < 1) {
-    return
-  }
-  const file = fileField.files[0];
-  const gzName = `${file.name}.gz`;
-  const compressor = new Compressor(gzName, file.size);
-  const fr = new FileReader();
-  fr.readAsArrayBuffer(file);
-  fr.addEventListener('loadend', () => {
-    const bytes = new Uint8Array(fr.result);
-    for (let i = 0; i < file.size; i++) {
-      compressor.buffer[i] = bytes[i];
-    }
-    const result = compressor.compress();
-    const blob = new Blob([result], { type: "application/gzip" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = gzName;
-    a.click();
-  });
-});
+      fileForm.addEventListener('submit', e => {
+        e.preventDefault();
+        if (fileField.files.length < 1) {
+          return;
+        }
+        const file = fileField.files[0];
+        const gzName = `${file.name}.gz`;
+        const compressor = new Compressor(gzName, file.size);
+        const fr = new FileReader();
+        fr.readAsArrayBuffer(file);
+        fr.addEventListener('loadend', () => {
+          const bytes = new Uint8Array(fr.result);
+          for (let i = 0; i < file.size; i++) {
+            compressor.buffer[i] = bytes[i];
+          }
+          const result = compressor.compress();
+          const blob = new Blob([result], { type: 'application/gzip' });
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = gzName;
+          a.click();
+        });
+      });
     </script>
   </body>
 </html>

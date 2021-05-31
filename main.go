@@ -8,17 +8,12 @@ import (
 	"github.com/syumai/go-wasm-gzipper/compressor"
 )
 
-var global = js.Global()
-
 func newUint8Array(size int) js.Value {
-	ua := global.Get("Uint8Array")
+	ua := js.Global().Get("Uint8Array")
 	return ua.New(size)
 }
 
-var compress = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-	if len(args) < 1 {
-		panic("src must be given")
-	}
+var compressFunc = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 	jsSrc := args[0]
 	srcLen := jsSrc.Get("length").Int()
 	srcBytes := make([]byte, srcLen)
@@ -41,6 +36,6 @@ var compress = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 })
 
 func main() {
-	js.Global().Set("compress", compress)
+	js.Global().Set("compress", compressFunc)
 	select {}
 }

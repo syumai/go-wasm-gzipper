@@ -8,13 +8,19 @@ import (
 	"github.com/syumai/go-wasm-gzipper/compressor"
 )
 
-func newCompressor(this js.Value, args []js.Value) interface{} {
-	name := args[0].String()
-	size := args[1].Int()
-	c := compressor.New(name, size)
-	this.Set("buffer", js.TypedArrayOf(c.Buffer()))
-	this.Set("compress", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		r, err := c.Compress()
+func main() {
+	js.Global().Set("compress", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		if len(args) < 1 {
+			panic("src must be given")
+		}
+		jsSrc := args[0]
+		srcLen := jsSrc.Get("length").Int()
+		srcBytes := make([]byte, srcLen)
+		js.CopyBytesToGo(srcBytes, jsSrc)
+
+		src := bytes.NewReader(srcBytes)
+
+		r, err := compressor.Compress(src)
 		if err != nil {
 			panic(err)
 		}
@@ -23,13 +29,9 @@ func newCompressor(this js.Value, args []js.Value) interface{} {
 		if _, err := io.Copy(&buf, r); err != nil {
 			panic(err)
 		}
-		return js.TypedArrayOf([]uint8(buf.Bytes()))
+		ua := newUint8Array(buf.Len())
+		js.CopyBytesToJS(ua, buf.Bytes())
+		return ua
 	}))
-	return this
-}
-
-func main() {
-	window := js.Global()
-	window.Set("Compressor", js.FuncOf(newCompressor))
 	select {}
 }

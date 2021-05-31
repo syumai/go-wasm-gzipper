@@ -7,27 +7,10 @@ import (
 	"time"
 )
 
-type Compressor struct {
-	name string
-	buf  []uint8
-}
-
-func New(name string, size int) *Compressor {
-	return &Compressor{
-		buf: make([]uint8, size),
-	}
-}
-
-func (c *Compressor) Buffer() []uint8 {
-	return c.buf
-}
-
-func (c *Compressor) Compress() (io.Reader, error) {
-	src := bytes.NewBuffer(c.buf)
+func Compress(src io.Reader) (io.Reader, error) {
 	var buf bytes.Buffer
 
 	zw := gzip.NewWriter(&buf)
-	zw.Name = c.name
 	zw.ModTime = time.Now()
 
 	if _, err := io.Copy(zw, src); err != nil {
